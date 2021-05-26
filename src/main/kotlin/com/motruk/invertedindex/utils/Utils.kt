@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentMap
 import kotlin.collections.ArrayList
 
 object Utils {
-    private val splitter = Regex("""\W+""")
+    val splitter = Regex("""[^a-zA-Z\-']+""")
 
     fun indexFile(
         file: File,
@@ -23,6 +23,7 @@ object Utils {
         fileNames.add(fileName)
         file.forEachLine { line ->
             for ((i, w) in line.toLowerCase().split(splitter).withIndex()) {
+                if (w.isBlank()) continue
                 var locations = invIndex[w]
                 if (locations == null) {
                     locations = Collections.synchronizedList(ArrayList())
@@ -37,7 +38,7 @@ object Utils {
 
 
     fun findWord(word: String, invIndex: Map<String, MutableList<WordLocation>>): String {
-        val w = word.toLowerCase().replace("[^a-zA-Z]".toRegex(), "")
+        val w = word.toLowerCase().replace("[^a-zA-Z-']".toRegex(), "")
         val locations = invIndex[w]
         return locations?.map { "$it - $w" }?.joinToString("\n") ?: "\n'$word' not found"
     }

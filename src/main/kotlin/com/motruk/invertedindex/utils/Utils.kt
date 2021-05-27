@@ -20,7 +20,6 @@ object Utils {
             println("'$fileName' already indexed")
             return fileNames.size == size
         }
-        fileNames.add(fileName)
         file.forEachLine { line ->
             for ((i, w) in line.toLowerCase().split(splitter).withIndex()) {
                 if (w.isBlank()) continue
@@ -33,6 +32,7 @@ object Utils {
                 locations!!.add(WordLocation(fileName, i + 1))
             }
         }
+        fileNames.add(fileName)
         return fileNames.size == size
     }
 

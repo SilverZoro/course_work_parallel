@@ -27,19 +27,19 @@ object AppServer {
         val out = DataOutputStream(socket.getOutputStream())
 
 
-        var userInput: String
+        var userEnter: String
         while (true) {
             out.writeUTF("Enter word to find, '$QUIT_COMMAND' to exit")
-            userInput = `in`.readUTF()
-            out.writeUTF("User Write - $userInput")
-            if (userInput.equals(QUIT_COMMAND, true)) {
+            userEnter = `in`.readUTF()
+            out.writeUTF("User Write - $userEnter")
+            if (userEnter.equals(QUIT_COMMAND, true)) {
                 println("Client is disconnected");
-                killConnection(socket, `in`, out)
+                closeConnection(socket, `in`, out)
                 break
             }
 
-            println("USER IS LOOKING FOR: $userInput")
-            val dataResult = dataSource.findData(userInput)
+            println("Finding a word for the user: $userEnter")
+            val dataResult = dataSource.findData(userEnter)
             sendDataToClient(
                 out = out,
                 data = dataResult
@@ -55,7 +55,7 @@ object AppServer {
         }
     }
 
-    private fun killConnection(socket: Socket, `in`: DataInputStream, out: DataOutputStream) {
+    private fun closeConnection(socket: Socket, `in`: DataInputStream, out: DataOutputStream) {
         try {
             socket.close()
             `in`.close()

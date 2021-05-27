@@ -11,8 +11,9 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
+
 class DataSourceImpl(
-    private val subscribeOn: Scheduler = Schedulers.computation(),
+    private val subscribeOn: Scheduler = Schedulers.from(Executors.newFixedThreadPool(1)),
     private val observeOn: Scheduler = Schedulers.from(Executors.newFixedThreadPool(1))
     ) : DataSource {
 
@@ -26,6 +27,7 @@ class DataSourceImpl(
     }
 
     private fun startIndexing() {
+        val time = System.currentTimeMillis()
         val resourcesPath = PathUtils.getResourcesPath()
         val fileList = resourcesPath.toFile().walkTopDown()
             .filter { it.isFile }
@@ -41,18 +43,21 @@ class DataSourceImpl(
                     .filter { it }
                     .observeOn(observeOn)
                     .subscribe({
+                        val allTime = System.currentTimeMillis() - time
                         wasIndexed = it
+                        println("Time - $allTime")
                     }, Utils::handleIndexingError)
             )
         }
+
     }
 
 
     override fun findData(search: String): String {
         if (!wasIndexed) return "Try again later"
-        val splitedUserInput = search.split(Utils.splitter)
+        val spliteduserEnter = search.split(Utils.splitter)
         var result = ""
-        splitedUserInput.forEach {
+        spliteduserEnter.forEach {
             result += Utils.findWord(it, invIndex)
             result += "\n"
             println(result)

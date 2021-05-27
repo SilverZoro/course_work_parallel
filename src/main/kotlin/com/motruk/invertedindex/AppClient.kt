@@ -16,15 +16,15 @@ object AppClient {
             val socket = Socket("localhost", SOCKET_PORT)
             val inputStream = DataInputStream(socket.getInputStream())
             val outputStream = DataOutputStream(socket.getOutputStream())
-            var userInput: String
+            var userEnter: String
 
             while (true) {
                 println(inputStream.readUTF())
-                userInput = inputScanner.nextLine()
-                outputStream.writeUTF(userInput)
-                if (userInput.equals(QUIT_COMMAND, true)) {
-                    println("Bye bye")
-                    killConnection(socket, inputStream, outputStream)
+                userEnter = inputScanner.nextLine()
+                outputStream.writeUTF(userEnter)
+                if (userEnter.equals(QUIT_COMMAND, true)) {
+                    println("Hope you found your word, goodbye")
+                    closeConnection(socket, inputStream, outputStream)
                     break
                 }
                 println(inputStream.readUTF())
@@ -44,7 +44,7 @@ object AppClient {
         return text
     }
 
-    private fun killConnection(socket: Socket, `in`: DataInputStream, out: DataOutputStream) {
+    private fun closeConnection(socket: Socket, `in`: DataInputStream, out: DataOutputStream) {
         try {
             socket.close()
             `in`.close()
